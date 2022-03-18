@@ -14,19 +14,19 @@ public class Stack<T> implements Iterable<T> {
         data = new ArrayList<>(max);
     }
 
-    int getSize() {
+    public int getSize() {
         return top + 1;
     }
 
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return top == -1;
     }
 
-    boolean isFull() {
+    public boolean isFull() {
         return top == max - 1;
     }
 
-    T peek() {
+    public T peek() {
         if (isEmpty()) {
             System.out.println("Stack is empty.");
             return null;
@@ -35,16 +35,16 @@ public class Stack<T> implements Iterable<T> {
         }
     }
 
-    void push(T data) {
+    public void push(T data) {
         if (isFull()) {
             System.out.println("Stack overflow.");
         } else {
             this.top++;
-            this.data.set(top, data);
+            this.data.add(top, data);
         }
     }
 
-    T pop() {
+    public T pop() {
         if (isEmpty()) {
             System.out.println("Stack is empty.");
             return null;
@@ -54,7 +54,7 @@ public class Stack<T> implements Iterable<T> {
         }
     }
 
-    int search(T data) {
+    public int search(T data) {
         for (int i = 0; i <= top; i++) {
             if (this.data.get(i) == data) {
                 return i;
@@ -118,7 +118,6 @@ public class Stack<T> implements Iterable<T> {
         System.out.println("Empty: " + s1.isEmpty());
         System.out.println("Full: " + s1.isFull());
         System.out.println("Peek: " + s1.peek());
-
     }
 }
 

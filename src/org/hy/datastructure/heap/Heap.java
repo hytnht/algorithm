@@ -1,11 +1,12 @@
 package org.hy.datastructure.heap;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public abstract class Heap<T> {
-    ArrayList<T> data;
-    int cap;
-    int size;
+public abstract class Heap<T> implements Iterable {
+    protected ArrayList<T> data;
+    protected int cap;
+    protected int size;
 
     public Heap(int cap) {
         this.cap = cap;
@@ -13,15 +14,15 @@ public abstract class Heap<T> {
         size = 0;
     }
 
-    public int parent(int key) {
+    public static int parent(int key) {
         return (key - 1) / 2;
     }
 
-    public int left(int key) {
+    public static int left(int key) {
         return key * 2 + 1;
     }
 
-    public int right(int key) {
+    public static int right(int key) {
         return key * 2 + 2;
     }
 
@@ -44,7 +45,7 @@ public abstract class Heap<T> {
     }
 
     public void buildHeap() {
-        for (int i = size / 2 - 1; i > 0; i--) {
+        for (int i = size / 2 - 1; i >= 0; i--) {
             heapify(i);
         }
     }
@@ -57,8 +58,8 @@ public abstract class Heap<T> {
             throw new Error(key + "is out of the heap");
         }
         T removed = data.get(key);
-        data.set(key, data.get(size));
-        data.set(size, null);
+        data.set(key, data.get(size - 1));
+        data.set(size - 1, null);
         size--;
         heapify(key);
         return removed;
@@ -76,17 +77,38 @@ public abstract class Heap<T> {
         StringBuffer sb = new StringBuffer();
         int i = 0;
         int level = 0;
-//        int maxlevel = (int) (Math.log(size + 1) / Math.log(2) - 1);
-        while (i < (size - 1) /*&& level < maxlevel*/) {
+        while (i < size) {
             sb.append(data.get(i));
-            if (i == (int) (Math.pow(2, level + 1) - 1)) {
-                sb.append("/n");
-                level++;
-            } else {
-                sb.append("-");
+            if (i != size - 1) {
+                int br = (int) Math.pow(2, level + 1) - 2;
+                if (i == br) {
+                    sb.append("\n");
+                    level++;
+                } else {
+                    sb.append("-");
+                }
             }
             i++;
         }
         return sb.toString();
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private int current = 0;
+
+            @Override
+            public boolean hasNext() {
+                return current < size;
+            }
+
+            @Override
+            public T next() {
+                T ret = data.get(current);
+                current++;
+                return ret;
+            }
+        };
     }
 }

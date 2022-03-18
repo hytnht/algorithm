@@ -1,7 +1,9 @@
 package org.hy.datastructure.heap;
 
-public class MinHeap<T extends Comparable<T>> extends Heap<T> {
-    public MinHeap(T[] data, int cap) {
+import java.util.Iterator;
+
+public class MaxHeap<T extends Comparable<T>> extends Heap<T> {
+    public MaxHeap(T[] data, int cap) {
         super(cap);
         if (data.length > cap) {
             throw new Error("Array length is larger than defined capacity");
@@ -10,7 +12,7 @@ public class MinHeap<T extends Comparable<T>> extends Heap<T> {
             this.data.add(i, data[i]);
         }
         size = data.length;
-        buildHeap();
+        heapify(0);
     }
 
     @Override
@@ -20,7 +22,7 @@ public class MinHeap<T extends Comparable<T>> extends Heap<T> {
         }
         this.data.add(size, data);
         int i = size;
-        while (i > 0 && this.data.get(i).compareTo(this.data.get(parent(i))) < 0) {
+        while (i > 0 && this.data.get(i).compareTo(this.data.get(parent(i))) > 0) {
             swap(i, parent(i));
             i = parent(i);
         }
@@ -31,21 +33,21 @@ public class MinHeap<T extends Comparable<T>> extends Heap<T> {
     public void heapify(int key) {
         int left = left(key);
         int right = right(key);
-        int smallest = key;
-        if (left < size && this.data.get(left).compareTo(this.data.get(key)) < 0) {
-            smallest = left;
+        int largest = key;
+        if (left < size && this.data.get(left).compareTo(this.data.get(key)) > 0) {
+            largest = left;
         }
-        if (right < size && this.data.get(right).compareTo(this.data.get(smallest)) < 0) {
-            smallest = right;
+        if (right < size && this.data.get(right).compareTo(this.data.get(largest)) > 0) {
+            largest = right;
         }
-        if (smallest != key) {
-            swap(smallest, key);
-            heapify(smallest);
+        if (largest != key) {
+            swap(largest, key);
+            heapify(largest);
         }
     }
 
     public static void main(String[] args) {
-        MinHeap<Integer> h1 = new MinHeap<>(new Integer[]{3, 5, 8, 2, 1, 7, 6}, 9);
+        MaxHeap<Integer> h1 = new MaxHeap<>(new Integer[]{3, 5, 8, 2, 1, 7, 6}, 9);
         System.out.println(h1);
         System.out.println("Inserted 4.");
         h1.insert(4);

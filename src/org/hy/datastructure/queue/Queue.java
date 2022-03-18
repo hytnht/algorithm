@@ -83,7 +83,7 @@ public class Queue<T> implements Iterable<T> {
             throw new Error("Overflow.");
         }
         size++;
-        this.data.set(size, data);
+        this.data.add(size, data);
         rear = data;
     }
 

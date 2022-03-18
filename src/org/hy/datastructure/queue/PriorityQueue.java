@@ -3,14 +3,14 @@ package org.hy.datastructure.queue;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class PriorityQueue<T> {
+public class PriorityQueue<T> implements Iterable<T> {
     private ArrayList<T> data;
     private T front;
     private T rear;
     private int cap;
     private int size;
 
-    public Queue(int cap) {
+    public PriorityQueue(int cap) {
         this.cap = cap;
         data = new ArrayList<>(cap);
         size = 0;

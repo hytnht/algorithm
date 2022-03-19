@@ -17,7 +17,9 @@ public class Queue<T> implements Iterable<T> {
         front = null;
         rear = null;
     }
-
+    public int getArraySize() {
+        return data.size();
+    }
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
@@ -83,7 +85,7 @@ public class Queue<T> implements Iterable<T> {
             throw new Error("Overflow.");
         }
         size++;
-        this.data.add(size, data);
+        this.data.add(data);
         rear = data;
     }
 

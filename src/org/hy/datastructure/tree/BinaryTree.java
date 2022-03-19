@@ -8,7 +8,7 @@ import java.util.Iterator;
 public class BinaryTree<T> implements Iterable<T> {
     private int size;
     private Node root;
-    private Iterator<Node> traversal;
+    private Traversal traversal;
     private String traversalName;
 
     class Node {
@@ -41,10 +41,11 @@ public class BinaryTree<T> implements Iterable<T> {
     }
 
     public int getHeight(Node node) {
-        if (isEmpty()) {
-            throw new Error("Empty");
+        if (node == null) {
+            return 0;
+        } else {
+            return 1 + Math.max(getHeight(node.left), getHeight(node.right));
         }
-        return 1 + Math.max(getHeight(node.left), getHeight(node.right));
     }
 
     public String getTraversal() {
@@ -56,7 +57,7 @@ public class BinaryTree<T> implements Iterable<T> {
     }
 
     public int search(T data) {
-        Iterator<Node> i = traversal;
+        Traversal i = traversal;
         int index = 0;
         while (i.hasNext()) {
             T current = i.next().data;
@@ -71,7 +72,7 @@ public class BinaryTree<T> implements Iterable<T> {
 
     public void insert(T data) {
         Node node = new Node(data);
-        Iterator<Node> i = levelOrder();
+        Traversal i = new LevelOrder();
         if (size == 0) {
             root = node;
             size++;
@@ -97,12 +98,12 @@ public class BinaryTree<T> implements Iterable<T> {
         if (search(data) == -1) {
             throw new Error(data + "isn't in the tree.");
         }
-        Iterator<Node> i = levelOrder();
+        Traversal i = new LevelOrder();
         Node deepest = root;
         while (i.hasNext()) {
             deepest = i.next();
         }
-        Iterator<Node> j = levelOrder();
+        Traversal j = new LevelOrder();
         while (j.hasNext()) {
             Node current = j.next();
             if (current.data == data) {
@@ -121,159 +122,178 @@ public class BinaryTree<T> implements Iterable<T> {
         StringBuilder sb = new StringBuilder();
         for (T data : this) {
             sb.append(data).append(", ");
-            sb.replace(sb.length() - 2, sb.length() - 1, ".");
         }
+        sb.replace(sb.length() - 2, sb.length() - 1, ".");
         return sb.toString();
     }
 
     //Traversal
     public void setTraversal(String traversal) {
-        traversalName = traversal + " order.";
+        traversalName = traversal;
         switch (traversal) {
-            case "in" -> this.traversal = inOrder();
-            case "pre" -> this.traversal = preOrder();
-            case "post" -> this.traversal = postOrder();
-            case "level" -> this.traversal = levelOrder();
-            default -> throw new Error("Only between \"in\", \"pre\", \"post\" and \"level\" order");
+            case "in-order" -> this.traversal = new InOrder();
+            case "pre-order" -> this.traversal = new PreOrder();
+            case "post-order" -> this.traversal = new PostOrder();
+            case "level-order" -> this.traversal = new LevelOrder();
+            default -> throw new Error("Only between \"in-order\", \"pre-order\", \"post-order\" and \"level-order\".");
         }
     }
 
     @Override
     public Iterator<T> iterator() {
+        setTraversal(traversalName);
         return new Iterator<>() {
-            final Iterator<Node> i = traversal;
-
             @Override
             public boolean hasNext() {
-                return i.hasNext();
+                return traversal.hasNext();
             }
 
             @Override
             public T next() {
-                return i.next().data;
+                return traversal.next().data;
             }
         };
     }
 
-    public Iterator<Node> inOrder() {
-        return new Iterator<Node>() {
-            private Stack<Node> stack = new Stack<>(size);
-            Node current = root;
+    abstract class Traversal {
+        abstract public boolean hasNext();
+
+        abstract public Node next();
+    }
+
+
+    class InOrder extends Traversal {
+        Stack<Node> stack = new Stack<>(size + 1);
+        Node current = root;
+
+        InOrder() {
             while (current != null) {
                 stack.push(current);
                 current = current.left;
             }
+        }
 
-            @Override
-            public boolean hasNext() {
-                return !stack.isEmpty();
-            }
+        @Override
+        public boolean hasNext() {
+            return !stack.isEmpty();
+        }
 
-            @Override
-            public Node next() {
-                Node ret = null;
-                if (current == null) {
-                    current = stack.pop();
-                    ret = current;
-                    current = current.right;
-                    while (current != null) {
-                        stack.push(current);
-                        current = current.left;
-                    }
-
-                }
-                return ret;
-            }
-        };
-    }
-
-    public Iterator<Node> postOrder() {
-        return new Iterator<Node>() {
-            Stack<Node> stack = new Stack<>(size);
-            stack.push(root.right);
-            stack.push(root);
-            Node current = root.left;
-
-            @Override
-            public boolean hasNext() {
-                return !stack.isEmpty();
-            }
-
-            @Override
-            public Node next() {
-                Node ret = null;
+        @Override
+        public Node next() {
+            Node ret = null;
+            if (current == null) {
+                current = stack.pop();
+                ret = current;
+                current = current.right;
                 while (current != null) {
-                    stack.push(current.right);
                     stack.push(current);
                     current = current.left;
                 }
-                current = stack.pop();
-                if (current.right != null && stack.peek() == current.right) {
-                    current = stack.pop();
-                    stack.push(current.parent);
-                } else {
-                    ret = current;
-                    current = null;
-                }
-                return ret;
+
             }
-        };
+            return ret;
+        }
     }
 
-    public Iterator<Node> preOrder() {
-        return new Iterator<Node>() {
-            private Stack<Node> stack;
-            Node current = root;
 
-            public void preOrder() {
-                stack = new Stack<>(size);
-                stack.push(current);
+    class PostOrder extends Traversal {
+        Stack<Node> stack = new Stack<>(size + 1);
+        Node current;
+
+        PostOrder() {
+            pushLoop(root);
+        }
+
+        void pushLoop(Node node) {
+            while (node != null) {
+                if (node.right != null) {
+                    stack.push(node.right);
+                }
+                stack.push(node);
+                node = node.left;
             }
+        }
 
-            @Override
-            public boolean hasNext() {
-                return current != null;
-            }
+        @Override
+        public boolean hasNext() {
+            return !stack.isEmpty();
+        }
 
-            @Override
-            public Node next() {
+        @Override
+        public Node next() {
+            current = stack.pop();
+            while (current.right != null && stack.peek() == current.right) {
                 current = stack.pop();
-                Node ret = current;
+                stack.push(current.parent);
+                pushLoop(current);
+            }
+            return current;
+        }
+    }
+
+
+    class PreOrder extends Traversal {
+        Stack<Node> stack;
+        Node current = root;
+
+        PreOrder() {
+            stack = new Stack<>(size);
+            stack.push(current);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !stack.isEmpty();
+        }
+
+        @Override
+        public Node next() {
+            current = stack.pop();
+            if (current.right != null) {
                 stack.push(current.right);
+            }
+            if (current.left != null) {
                 stack.push(current.left);
-                return ret;
             }
-        };
+            return current;
+        }
     }
 
-    public Iterator<Node> levelOrder() {
-        return new Iterator<Node>() {
-            Queue<Node> queue = new Queue<>(size);
-            Node current = root;
+    class LevelOrder extends Traversal {
+        Queue<Node> queue = new Queue<>(size + 1);
+
+        LevelOrder() {
             queue.enqueue(root);
+        }
 
-            @Override
-            public boolean hasNext() {
-                return current != null;
-            }
+        @Override
+        public boolean hasNext() {
+            return !queue.isEmpty();
+        }
 
-            @Override
-            public Node next() {
-                Node ret = current;
-                if (current.left != null) {
-                    queue.enqueue(current.left);
-                }
-                if (current.right != null) {
-                    queue.enqueue(current.right);
-                }
-                current = queue.dequeue();
-                return ret;
+        @Override
+        public Node next() {
+            Node current = queue.dequeue();
+            if (current.left != null) {
+                queue.enqueue(current.left);
             }
-        };
+            if (current.right != null) {
+                queue.enqueue(current.right);
+            }
+            return current;
+        }
     }
+
+//    public void print(){
+//        Traversal iter = new LevelOrder();
+//        while (iter.hasNext()) {
+//            System.out.print(iter.next().data);
+//        }
+
 
     public static void main(String[] args) {
-        BinaryTree<Integer> tree = new BinaryTree<>("in");
+
+        BinaryTree<Integer> tree = new BinaryTree<>("in-order");
         System.out.println("Size: " + tree.getSize());
         System.out.println("Empty: " + tree.isEmpty());
         System.out.println("Traversal: " + tree.getTraversal());
@@ -281,35 +301,36 @@ public class BinaryTree<T> implements Iterable<T> {
             System.out.println("Inserted " + i);
             tree.insert(i);
         }
+        System.out.println(tree);
         System.out.println("Size: " + tree.getSize());
         System.out.println("Empty: " + tree.isEmpty());
         System.out.println("Height: " + tree.getHeight(tree.root));
-        System.out.println("Tree in " + tree.traversalName + tree);
-        System.out.println("Search 1 in " + tree.traversalName + tree.search(1));
-        tree.setTraversal("post");
-        System.out.println("Tree in " + tree.traversalName + tree);
-        System.out.println("Search 1 in " + tree.traversalName + tree.search(1));
-        tree.setTraversal("pre");
-        System.out.println("Tree in " + tree.traversalName + tree);
-        System.out.println("Search 1 in " + tree.traversalName + tree.search(1));
-        tree.setTraversal("level");
-        System.out.println("Tree in " + tree.traversalName + tree);
-        System.out.println("Search 1 in " + tree.traversalName + tree.search(1));
+        System.out.println("Tree in " + tree.traversalName + ": " + tree);
+        System.out.println("Search 1 in " + tree.traversalName + ": " + tree.search(1));
+        tree.setTraversal("post-order");
+        System.out.println("Tree in " + tree.traversalName + ": " + tree);
+        System.out.println("Search 1 in " + tree.traversalName + ": " + tree.search(1));
+        tree.setTraversal("pre-order");
+        System.out.println("Tree in " + tree.traversalName + ": " + tree);
+        System.out.println("Search 1 in " + tree.traversalName + ": " + tree.search(1));
+        tree.setTraversal("level-order");
+        System.out.println("Tree in " + tree.traversalName + ": " + tree);
+        System.out.println("Search 1 in " + tree.traversalName + ": " + tree.search(1));
         System.out.println("Search null: " + tree.search(null));
         tree.remove(1);
-        System.out.println("Removed 1. Tree in " + tree.traversalName + tree);
+        System.out.println("Removed 1. Tree in " + tree.traversalName + ": " + tree);
         tree.remove(6);
-        System.out.println("Removed 6. Tree in " + tree.traversalName + tree);
+        System.out.println("Removed 6. Tree in " + tree.traversalName + ": " + tree);
         tree.remove(3);
-        System.out.println("Removed 3. Tree in " + tree.traversalName + tree);
+        System.out.println("Removed 3. Tree in " + tree.traversalName + ": " + tree);
         tree.remove(2);
-        System.out.println("Removed 2. Tree in " + tree.traversalName + tree);
+        System.out.println("Removed 2. Tree in " + tree.traversalName + ": " + tree);
         tree.remove(4);
-        System.out.println("Removed 4. Tree in " + tree.traversalName + tree);
+        System.out.println("Removed 4. Tree in " + tree.traversalName + ": " + tree);
         tree.remove(5);
-        System.out.println("Removed 5. Tree in " + tree.traversalName + tree);
+        System.out.println("Removed 5. Tree in " + tree.traversalName + ": " + tree);
         tree.remove(7);
-        System.out.println("Removed 7. Tree in " + tree.traversalName + tree);
+        System.out.println("Removed 7. Tree in " + tree.traversalName + ": " + tree);
         System.out.println("Empty: " + tree.isEmpty());
     }
 

@@ -57,10 +57,10 @@ public class BinaryTree<T> implements Iterable<T> {
     }
 
     public int search(T data) {
-        Traversal i = traversal;
+        setTraversal(traversalName);
         int index = 0;
-        while (i.hasNext()) {
-            T current = i.next().data;
+        while (traversal.hasNext()) {
+            T current = traversal.next().data;
             if (current != data) {
                 index++;
             } else {
@@ -96,35 +96,46 @@ public class BinaryTree<T> implements Iterable<T> {
 
     public void remove(T data) {
         if (search(data) == -1) {
-            throw new Error(data + "isn't in the tree.");
+            throw new Error(data + " isn't in the tree.");
         }
-        Traversal i = new LevelOrder();
-        Node deepest = root;
-        while (i.hasNext()) {
-            deepest = i.next();
-        }
-        Traversal j = new LevelOrder();
-        while (j.hasNext()) {
-            Node current = j.next();
-            if (current.data == data) {
-                current.data = deepest.data;
-                break;
+        if (size == 1 & root.data == data) {
+            root = null;
+            size--;
+        } else {
+            Traversal i = new LevelOrder();
+            Node deepest = root;
+            while (i.hasNext()) {
+                deepest = i.next();
+            }
+            Traversal j = new LevelOrder();
+            while (j.hasNext()) {
+                Node current = j.next();
+                if (current.data == data) {
+                    current.data = deepest.data;
+                    if (deepest.parent.left == deepest) {
+                        deepest.parent.left = null;
+                    } else {
+                        deepest.parent.right = null;
+                    }
+                    size--;
+                    break;
+                }
             }
         }
-        deepest.parent = null;
     }
 
     @Override
     public String toString() {
         if (size == 0) {
-            System.out.println("Empty.");
+            return "Empty.";
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (T data : this) {
+                sb.append(data).append(", ");
+            }
+            sb.replace(sb.length() - 2, sb.length() - 1, ".");
+            return sb.toString();
         }
-        StringBuilder sb = new StringBuilder();
-        for (T data : this) {
-            sb.append(data).append(", ");
-        }
-        sb.replace(sb.length() - 2, sb.length() - 1, ".");
-        return sb.toString();
     }
 
     //Traversal
@@ -163,7 +174,7 @@ public class BinaryTree<T> implements Iterable<T> {
 
 
     class InOrder extends Traversal {
-        Stack<Node> stack = new Stack<>(size + 1);
+        Stack<Node> stack = new Stack<>(size);
         Node current = root;
 
         InOrder() {
@@ -195,9 +206,8 @@ public class BinaryTree<T> implements Iterable<T> {
         }
     }
 
-
     class PostOrder extends Traversal {
-        Stack<Node> stack = new Stack<>(size + 1);
+        Stack<Node> stack = new Stack<>(size);
         Node current;
 
         PostOrder() {
@@ -222,15 +232,17 @@ public class BinaryTree<T> implements Iterable<T> {
         @Override
         public Node next() {
             current = stack.pop();
-            while (current.right != null && stack.peek() == current.right) {
-                current = stack.pop();
-                stack.push(current.parent);
-                pushLoop(current);
+            if (!stack.isEmpty()) {
+                while (current.right != null && stack.peek() == current.right) {
+                    current = stack.pop();
+                    stack.push(current.parent);
+                    pushLoop(current);
+                    current = stack.pop();
+                }
             }
             return current;
         }
     }
-
 
     class PreOrder extends Traversal {
         Stack<Node> stack;
@@ -284,15 +296,7 @@ public class BinaryTree<T> implements Iterable<T> {
         }
     }
 
-//    public void print(){
-//        Traversal iter = new LevelOrder();
-//        while (iter.hasNext()) {
-//            System.out.print(iter.next().data);
-//        }
-
-
     public static void main(String[] args) {
-
         BinaryTree<Integer> tree = new BinaryTree<>("in-order");
         System.out.println("Size: " + tree.getSize());
         System.out.println("Empty: " + tree.isEmpty());
@@ -301,7 +305,6 @@ public class BinaryTree<T> implements Iterable<T> {
             System.out.println("Inserted " + i);
             tree.insert(i);
         }
-        System.out.println(tree);
         System.out.println("Size: " + tree.getSize());
         System.out.println("Empty: " + tree.isEmpty());
         System.out.println("Height: " + tree.getHeight(tree.root));
@@ -333,7 +336,6 @@ public class BinaryTree<T> implements Iterable<T> {
         System.out.println("Removed 7. Tree in " + tree.traversalName + ": " + tree);
         System.out.println("Empty: " + tree.isEmpty());
     }
-
 }
 
 

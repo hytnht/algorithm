@@ -6,10 +6,10 @@ import org.hy.datastructure.stack.Stack;
 import java.util.Iterator;
 
 public class BinaryTree<T> implements Iterable<T> {
-    private int size;
-    private Node root;
-    private Traversal traversal;
-    private String traversalName;
+    protected int size;
+    protected Node root;
+    protected Traversal traversal;
+    protected String traversalName;
 
     class Node {
         T data;

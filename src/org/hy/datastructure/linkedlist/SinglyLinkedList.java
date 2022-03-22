@@ -10,7 +10,7 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 
         public Node(T data) {
             this.data = data;
-            this.next = null; // NOTE: set default value for next
+            this.next = null;
         }
 
         public Node(T data, Node next) {
@@ -27,13 +27,17 @@ public class SinglyLinkedList<T> implements Iterable<T> {
     }
 
     //---Methods---
-    // NOTE: missing getSize method
-    int getSize() {
+
+    //Get list's size:
+    public int getSize() {
         return size;
     }
 
+    //Get first node:
+    public Node getHead() { return head; }
+
     //Insert data to the end of the list:
-    void insert(T data) {
+    public void insert(T data) {
         Node node = new Node(data);
         if (this.size == 0) {
             this.head = node;
@@ -45,11 +49,10 @@ public class SinglyLinkedList<T> implements Iterable<T> {
             i.next = node;
         }
         size++;
-        System.out.println("Inserted " + data + " to the end.");
     }
 
     //Insert data to a specified position:
-    void insert(T data, int index) {
+    public void insert(T data, int index) {
         try {
             Node node = new Node(data);
             if (index == 0) {
@@ -66,63 +69,46 @@ public class SinglyLinkedList<T> implements Iterable<T> {
                 i.next = node;
             }
             size++;
-            System.out.println("Inserted " + data + " to the index " + index + ".");
         } catch (NullPointerException ex) {
             System.out.println("Index " + index + " is out of the list.");
         }
     }
 
     //Remove data:
-    void remove(T data) {
-        /* NOTE: Những chỗ như thế này hạn chế xài hàm contain. Vì phải mất O(n) để check xem data có tồn tại hay không.
-        Thay vào đó sửa lại sao cho mình vừa lướt qua 1 lượt, có thì mình xoá không thì mình nói không có thôi.
-        Thích thì sửa không cũng không sao */
+    public void remove(T data) {
         if (this.isEmpty()) {
-            System.out.println("The list is empty.");
+            throw new Error("The list is empty.");
         } else {
-            boolean available = false;
             if (this.head.data == data) {
                 this.head = this.head.next;
-                available = true;
             } else {
-                Node node = new Node(data);
                 Node i = this.head;
-                Node j = null;
+                Node j;
                 while (i.next != null) {
                     j = i;
-                    if (i.data == node.data) {
+                    i = i.next;
+                    if (i.data == data) {
                         j.next = i.next;
-                        available = true;
-                    } else {
-                        i = i.next;
+                        i.next = null;
                     }
                 }
+                if (i.data != data) {
+                    throw new Error(data + " isn't in this list.");
+                }
             }
-            if (available) {
-                size--;
-                System.out.println("Removed " + data + ".");
-            } else {
-                System.out.println(data + " isn't in this list.");
-            }
+            size--;
         }
     }
 
     //Check if list is empty:
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return size == 0;
     }
 
-    // NOTE: hàm này trùng với hàm search, hàm này trả về booleen thì hàm search trả về index, mình chỉ cần check index != -1 là được
-    //Check if list contains a specified data:
-    boolean contain(T data) {
-        return this.search(data) != -1;
-    }
-
     //Return index of a specified data:
-    int search(T data) {
+    public int search(T data) {
         if (isEmpty()) {
-            System.out.println("The list is empty");
-            return -1;
+            throw new Error("The list is empty.");
         } else {
             int count = 0;
             Node i = this.head;
@@ -134,17 +120,15 @@ public class SinglyLinkedList<T> implements Iterable<T> {
                 count++;
             }
             if (i.data == data) {
-                return count; // NOTE: count được return trước khi được tăng lên 1, nếu muốn thì xài ++count -> tăng count trước khi return
+                return count;
             }
-            System.out.println(data + " isn't in the list.");
-            return -1;
+            throw new Error("The list is empty.");
         }
     }
 
-    // NOTE: Implement iterator nếu muốn xài java for each như thế này for (T d : list)
     @Override
     public Iterator<T> iterator() {
-        return new Iterator<T>() {
+        return new Iterator<>() {
             private Node current = head;
 
             @Override
@@ -164,12 +148,11 @@ public class SinglyLinkedList<T> implements Iterable<T> {
         };
     }
 
-    // NOTE: Override hàm toString(), chỉ cần System.out.println(l1) là in như 1 Object bình thường
-    // tham khảo link sau https://www.javatpoint.com/understanding-toString()-method
-    @Override // nhớ thêm annotation @Override để biết method đã bị override
+
+    @Override
     public String toString() {
         if (isEmpty()) {
-            return "empty. Nothing to print :<.";
+            return "Nothing to print :<.";
         }
 
         StringBuilder sb = new StringBuilder("The list is: ");
@@ -178,23 +161,6 @@ public class SinglyLinkedList<T> implements Iterable<T> {
         }
         sb.replace(sb.length() - 2, sb.length() - 1, ".");
         return sb.toString();
-    }
-
-
-    // NOTE: remove this method
-    //Print the list:
-    void print() {
-        System.out.print("The list is: ");
-        try {
-            Node i = this.head;
-            while (i.next != null) {
-                System.out.print(i.data + ", ");
-                i = i.next;
-            }
-            System.out.println(i.data + ".");
-        } catch (NullPointerException ex) {
-            System.out.print("empty. Nothing to print :<.");
-        }
     }
 
     //--Main--
@@ -215,19 +181,14 @@ public class SinglyLinkedList<T> implements Iterable<T> {
         System.out.println("Search result of 0: " + l1.search(0));
         System.out.println("Search result of 4: " + l1.search(4));
         System.out.println("Search result of 5: " + l1.search(5));
-        System.out.println("Search result of null: " + l1.search(null));
         l1.remove(3);
-        l1.print();
+        System.out.println("List after remove 3: " + l1);
         l1.remove(0);
-        l1.print();
+        System.out.println("List after remove 0: " + l1);
         l1.remove(5);
-        l1.print();
-        l1.remove(null);
-        l1.print();
+        System.out.println("List after remove 5: " + l1);
         SinglyLinkedList<Integer> l2 = new SinglyLinkedList<>();
         System.out.println("Size of second list: " + l2.getSize());
         System.out.println("Check if second list is empty: " + l2.isEmpty());
-        l2.remove(3);
-        l2.print();
     }
 }

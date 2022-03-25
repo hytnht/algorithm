@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public class SinglyLinkedList<T> implements Iterable<T> {
     //---Attributes---
-    class Node {
+    public class Node {
         T data;
         Node next;
 
@@ -16,6 +16,14 @@ public class SinglyLinkedList<T> implements Iterable<T> {
         public Node(T data, Node next) {
             this.data = data;
             this.next = next;
+        }
+
+        public T getData() {
+            return data;
+        }
+
+        public Node getNext() {
+            return next;
         }
     }
 
@@ -35,6 +43,15 @@ public class SinglyLinkedList<T> implements Iterable<T> {
 
     //Get first node:
     public Node getHead() { return head; }
+
+    //Get data at index
+    public T get(int index) {
+        Node current = head;
+        for (int i = 0; i <= index - 1; i++) {
+            current = current.next;
+        }
+        return current.data;
+    }
 
     //Insert data to the end of the list:
     public void insert(T data) {
@@ -108,21 +125,18 @@ public class SinglyLinkedList<T> implements Iterable<T> {
     //Return index of a specified data:
     public int search(T data) {
         if (isEmpty()) {
-            throw new Error("The list is empty.");
+            return -1;
         } else {
             int count = 0;
             Node i = this.head;
-            while (i.next != null) {
+            while (i != null) {
                 if (i.data == data) {
                     return count;
                 }
                 i = i.next;
                 count++;
             }
-            if (i.data == data) {
-                return count;
-            }
-            throw new Error("The list is empty.");
+            return -1;
         }
     }
 

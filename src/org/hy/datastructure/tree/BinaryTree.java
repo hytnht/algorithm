@@ -98,7 +98,7 @@ public class BinaryTree<T> implements Iterable<T> {
         if (search(data) == -1) {
             throw new Error(data + " isn't in the tree.");
         }
-        if (size == 1 & root.data == data) {
+        if (size == 1 && root.data == data) {
             root = null;
             size--;
         } else {

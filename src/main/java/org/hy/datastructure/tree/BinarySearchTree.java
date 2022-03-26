@@ -1,4 +1,4 @@
-package org.hy.datastructure.tree;
+package main.java.org.hy.datastructure.tree;
 
 public class BinarySearchTree<T extends Comparable<T>> extends BinaryTree<T> {
     public BinarySearchTree(String traversal) {

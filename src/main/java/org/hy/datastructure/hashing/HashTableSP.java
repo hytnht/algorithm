@@ -1,14 +1,15 @@
-package org.hy.datastructure.hashing;
+package main.java.org.hy.datastructure.hashing;
 
-import org.hy.datastructure.linkedlist.SinglyLinkedList;
+import main.java.org.hy.datastructure.linkedlist.SinglyLinkedList;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class HashTableOA<K, V> implements Iterable<HashTableOA<K, V>.Node> {
-    private final int cap;
+public class HashTableSP<K, V> implements Iterable<HashTableSP<K, V>.Node> {
+    private final int bucket;
     private int size;
     private final ArrayList<Node> table;
+    private final SinglyLinkedList<K> keylist;
 
     class Node {
         private K key;
@@ -37,28 +38,20 @@ public class HashTableOA<K, V> implements Iterable<HashTableOA<K, V>.Node> {
         }
     }
 
-    public HashTableOA(int cap) {
-        this.cap = cap;
-        table = new ArrayList<>(cap);
-        for (int i = 0; i < cap; i++) {
+    public HashTableSP(int bucket) {
+        this.bucket = bucket;
+        table = new ArrayList<>(bucket);
+        for (int i = 0; i < bucket; i++) {
             table.add(null);
         }
+        keylist = new SinglyLinkedList<>();
     }
 
     public int hashing(K key) {
-        int hashKey = (int) key % cap;
+        int hashKey = (int) key % bucket;
         if (hashKey < 0) {
-            return hashKey + cap;
+            return hashKey + bucket;
         } else return hashKey;
-    }
-
-    public int rehash() {
-        for (int i = 0; i < cap; i++) {
-            if (table.get(i) == null) {
-                return i;
-            }
-        }
-        throw new Error("Table is already full");
     }
 
     public int getSize() {
@@ -70,12 +63,21 @@ public class HashTableOA<K, V> implements Iterable<HashTableOA<K, V>.Node> {
     }
 
     public void insert(K key, V value) {
-        Node node = new Node(key, value);
         int hashKey = hashing(key);
-        if (table.get(hashKey) != null) {
-            hashKey = rehash();
+        Node node = new Node(key, value);
+        Node current = table.get(hashKey);
+        if (current == null) {
+            table.set(hashKey, node);
+        } else {
+            while (current.next != null) {
+                if (current.key == key) {
+                    throw new Error("Key is existed.");
+                }
+                current = current.next;
+            }
+            current.next = node;
         }
-        table.set(hashKey, node);
+        keylist.insert(key);
         size++;
         System.out.println("Inserted " + key + " - " + value);
     }
@@ -84,50 +86,50 @@ public class HashTableOA<K, V> implements Iterable<HashTableOA<K, V>.Node> {
         int hashKey = hashing(key);
         Node current = table.get(hashKey);
         if (current.key == key) {
-            table.set(hashKey, null);
-            return current.value;
+            table.set(hashKey, current.next);
+            current.next = null;
         }
-        int index = 0;
-        for (Node i : this) {
-            if (i != null) {
-                if (i.key == key) {
-                    table.set(index, null);
-                    size--;
-                    return i.value;
-                }
+        while (current.next != null) {
+            Node prev = current;
+            current = current.next;
+            if (current.key == key) {
+                prev.next = current.next;
+                current.next = null;
             }
-            index++;
         }
-        throw new Error(key + " isn't in the table.");
+        if (current.key != key) {
+            throw new Error(key + " isn't in the table.");
+        }
+        size--;
+        keylist.remove(key);
+        return current.value;
     }
 
     public V get(K key) {
         int hashKey = hashing(key);
         Node current = table.get(hashKey);
-        if (current.key == key) {
-            return current.value;
+        while (current != null && current.key != key) {
+            current = current.next;
         }
-        for (Node i : this) {
-            if (i.key == key) {
-                return i.value;
-            }
+        if (current == null) {
+            throw new Error(key + " isn't in the table.");
         }
-        throw new Error(key + " isn't in the table.");
+        return current.value;
     }
 
     public Iterator<Node> iterator() {
         return new Iterator<>() {
-            int i = -1;
+            final Iterator<K> i = keylist.iterator();
 
             @Override
             public boolean hasNext() {
-                return i < cap - 1;
+                return i.hasNext();
             }
 
             @Override
             public Node next() {
-                i++;
-                return table.get(i);
+                K key = i.next();
+                return new Node(key, get(key));
             }
         };
     }
@@ -136,29 +138,22 @@ public class HashTableOA<K, V> implements Iterable<HashTableOA<K, V>.Node> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (Node i : this) {
-            if (i != null) {
-                sb.append("[").append(i.key).append("]:[").append(i.value).append("] - ");
-            }
+            sb.append("[").append(i.key).append("]:[").append(i.value).append("] - ");
         }
-        sb.replace(sb.length() - 3, sb.length() - 1, ".");
+        sb.replace(sb.length()-3, sb.length()-1,".");
         return sb.toString();
     }
 
     public static void main(String[] args) {
-        HashTableOA<Integer, String> h1 = new HashTableOA<>(10);
+        HashTableSP<Integer, String> h1 = new HashTableSP<>(10);
         System.out.println("Table size: " + h1.table.size());
         System.out.println("Size: " + h1.getSize());
         System.out.println("Empty: " + h1.isEmpty());
         h1.insert(31, "A");
-        System.out.println("Hash: " + h1);
         h1.insert(12, "B");
-        System.out.println("Hash: " + h1);
         h1.insert(67, "C");
-        System.out.println("Hash: " + h1);
         h1.insert(50, "D");
-        System.out.println("Hash: " + h1);
         h1.insert(22, "E");
-        System.out.println("Hash: " + h1);
         h1.insert(32, "F");
         System.out.println("Hash: " + h1);
         System.out.println("Size: " + h1.getSize());

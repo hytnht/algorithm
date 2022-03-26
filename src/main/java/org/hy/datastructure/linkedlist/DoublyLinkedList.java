@@ -1,27 +1,28 @@
-package org.hy.datastructure.linkedlist;
+package main.java.org.hy.datastructure.linkedlist;
 
-public class CircularlyLinkedList<T> {
+public class DoublyLinkedList<T> {
     //---Attributes---
     class Node {
         T data;
         Node next;
+        Node prev;
 
         public Node(T data) {
             this.data = data;
         }
 
-        public Node(T data, Node next) {
+        public Node(T data, Node prev, Node next) {
             this.data = data;
+            this.prev = prev;
             this.next = next;
         }
     }
 
     int size = 0;
-    private Node head, end;
+    private Node head;
 
-    public CircularlyLinkedList() {
+    public DoublyLinkedList() {
         this.head = null;
-        this.end = null;
     }
 
     //---Methods---
@@ -30,16 +31,13 @@ public class CircularlyLinkedList<T> {
         Node node = new Node(data);
         if (this.size == 0) {
             this.head = node;
-            this.head.next = this.head;
-            this.end = this.head;
         } else {
             Node i = this.head;
-            while (i.next != this.head) {
+            while (i.next != null) {
                 i = i.next;
             }
             i.next = node;
-            node.next = this.head;
-            this.end = node;
+            node.prev = i;
         }
         size++;
         System.out.println("Inserted " + data + " to the end.");
@@ -47,14 +45,12 @@ public class CircularlyLinkedList<T> {
 
     //Insert data to a specified position:
     void insert(T data, int index) {
-        if (index > size) {
-            System.out.println("Index " + index + " is out of the list.");
-        } else {
+        try {
             Node node = new Node(data);
             if (index == 0) {
+                this.head.prev = node;
                 node.next = this.head;
                 this.head = node;
-                this.end.next = this.head;
             } else {
                 int count = 1;
                 Node i = this.head;
@@ -62,14 +58,17 @@ public class CircularlyLinkedList<T> {
                     count++;
                     i = i.next;
                 }
+                node.prev = i;
                 node.next = i.next;
-                i.next = node;
-                if (index == size) {
-                    this.end = node;
+                if (index != size) {
+                    i.next.prev = node;
                 }
+                i.next = node;
             }
             size++;
             System.out.println("Inserted " + data + " to the index " + index + ".");
+        } catch (NullPointerException ex) {
+            System.out.println("Index " + index + " is out of the list.");
         }
     }
 
@@ -79,20 +78,16 @@ public class CircularlyLinkedList<T> {
             System.out.println(data + " isn't in this list.");
         } else {
             if (this.head.data == data) {
-                this.end.next = this.head.next;
                 this.head = this.head.next;
+                this.head.prev = null;
             } else {
                 Node node = new Node(data);
                 Node i = this.head;
-                Node j = null;
                 while (i.data != node.data) {
-                    j = i;
                     i = i.next;
                 }
-                if (i.next == this.head) {
-                    this.end = j;
-                }
-                j.next = i.next;
+                i.prev.next = i.next;
+                i.prev = null;
                 i.next = null;
             }
             size--;
@@ -108,7 +103,7 @@ public class CircularlyLinkedList<T> {
     //Check if list contains a specified data:
     boolean contain(T data) {
         Node i = this.head;
-        while (i.next != this.head) {
+        while (i.next != null) {
             if (i.data == data) {
                 return true;
             }
@@ -122,7 +117,7 @@ public class CircularlyLinkedList<T> {
         if (this.contain(data)) {
             int count = 0;
             Node i = this.head;
-            while (i.next != this.head) {
+            while (i.next != null) {
                 if (i.data == data) {
                     return count;
                 }
@@ -142,7 +137,7 @@ public class CircularlyLinkedList<T> {
         System.out.print("The list is: ");
         try {
             Node i = this.head;
-            while (i.next != this.head) {
+            while (i.next != null) {
                 System.out.print(i.data + ", ");
                 i = i.next;
             }
@@ -154,7 +149,7 @@ public class CircularlyLinkedList<T> {
 
     //--Main--
     public static void main(String[] args) {
-        CircularlyLinkedList<Integer> l1 = new CircularlyLinkedList<>();
+        DoublyLinkedList<Integer> l1 = new DoublyLinkedList<>();
         l1.insert(1);
         l1.insert(2);
         l1.insert(4);
@@ -179,7 +174,7 @@ public class CircularlyLinkedList<T> {
         l1.print();
         l1.remove(null);
         l1.print();
-        CircularlyLinkedList<Integer> l2 = new CircularlyLinkedList<>();
+        DoublyLinkedList<Integer> l2 = new DoublyLinkedList<>();
         System.out.println("Size of second list: " + l2.size);
         System.out.println("Check if second list is empty: " + l2.isEmpty());
         l2.remove(3);

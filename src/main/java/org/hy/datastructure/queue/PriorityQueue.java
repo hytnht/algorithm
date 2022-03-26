@@ -1,4 +1,4 @@
-package org.hy.datastructure.queue;
+package main.java.org.hy.datastructure.queue;
 
 import java.util.ArrayList;
 import java.util.Iterator;

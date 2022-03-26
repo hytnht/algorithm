@@ -1,6 +1,4 @@
-package org.hy.datastructure.heap;
-
-import java.util.Iterator;
+package main.java.org.hy.datastructure.heap;
 
 public class MaxHeap<T extends Comparable<T>> extends Heap<T> {
     public MaxHeap(T[] data, int cap) {

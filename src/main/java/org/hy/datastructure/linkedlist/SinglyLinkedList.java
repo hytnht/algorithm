@@ -1,4 +1,4 @@
-package org.hy.datastructure.linkedlist;
+package main.java.org.hy.datastructure.linkedlist;
 
 import java.util.Iterator;
 

@@ -1,8 +1,8 @@
-package org.hy.datastructure.graph;
+package main.java.org.hy.datastructure.graph;
 
-import org.hy.datastructure.linkedlist.SinglyLinkedList;
-import org.hy.datastructure.queue.Queue;
-import org.hy.datastructure.stack.Stack;
+import main.java.org.hy.datastructure.linkedlist.SinglyLinkedList;
+import main.java.org.hy.datastructure.queue.Queue;
+import main.java.org.hy.datastructure.stack.Stack;
 
 import java.util.Iterator;
 

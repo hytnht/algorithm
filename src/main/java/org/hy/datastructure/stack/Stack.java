@@ -1,4 +1,4 @@
-package org.hy.datastructure.stack;
+package main.java.org.hy.datastructure.stack;
 
 import java.util.ArrayList;
 import java.util.Iterator;

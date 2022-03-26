@@ -1,4 +1,4 @@
-package org.hy.datastructure.heap;
+package main.java.org.hy.datastructure.heap;
 
 public class MinHeap<T extends Comparable<T>> extends Heap<T> {
     public MinHeap(T[] data, int cap) {

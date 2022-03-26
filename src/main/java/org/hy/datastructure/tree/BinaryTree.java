@@ -1,7 +1,7 @@
-package org.hy.datastructure.tree;
+package main.java.org.hy.datastructure.tree;
 
-import org.hy.datastructure.queue.Queue;
-import org.hy.datastructure.stack.Stack;
+import main.java.org.hy.datastructure.queue.Queue;
+import main.java.org.hy.datastructure.stack.Stack;
 
 import java.util.Iterator;
 

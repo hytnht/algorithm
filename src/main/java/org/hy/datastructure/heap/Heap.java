@@ -1,4 +1,4 @@
-package org.hy.datastructure.heap;
+package main.java.org.hy.datastructure.heap;
 
 import java.util.ArrayList;
 import java.util.Iterator;

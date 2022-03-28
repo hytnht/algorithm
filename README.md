@@ -1,2 +1,2 @@
-# data-structures
-Data Structures implemented in Java
+# algorithm
+Data Structures and Algorithm implemented in Java

@@ -10,7 +10,7 @@ public class MaxHeap<T extends Comparable<T>> extends Heap<T> {
             this.data.add(i, data[i]);
         }
         size = data.length;
-        heapify(0);
+        buildHeap();
     }
 
     @Override
@@ -31,21 +31,21 @@ public class MaxHeap<T extends Comparable<T>> extends Heap<T> {
     public void heapify(int key) {
         int left = left(key);
         int right = right(key);
-        int largest = key;
+        int max = key;
         if (left < size && this.data.get(left).compareTo(this.data.get(key)) > 0) {
-            largest = left;
+            max = left;
         }
-        if (right < size && this.data.get(right).compareTo(this.data.get(largest)) > 0) {
-            largest = right;
+        if (right < size && this.data.get(right).compareTo(this.data.get(max)) > 0) {
+            max = right;
         }
-        if (largest != key) {
-            swap(largest, key);
-            heapify(largest);
+        if (max != key) {
+            swap(max, key);
+            heapify(max);
         }
     }
 
     public static void main(String[] args) {
-        MaxHeap<Integer> h1 = new MaxHeap<>(new Integer[]{3, 5, 8, 2, 1, 7, 6}, 9);
+        MaxHeap<Integer> h1 = new MaxHeap<>(new Integer[]{3, 5, 8, 2, 1, 7, 6}, 45);
         System.out.println(h1);
         System.out.println("Inserted 4.");
         h1.insert(4);

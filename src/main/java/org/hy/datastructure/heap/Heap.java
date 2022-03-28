@@ -3,14 +3,14 @@ package main.java.org.hy.datastructure.heap;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public abstract class Heap<T> implements Iterable {
+public abstract class Heap<T> implements Iterable<T> {
     protected ArrayList<T> data;
     protected int cap;
     protected int size;
 
     public Heap(int cap) {
         this.cap = cap;
-        data = new ArrayList<T>(cap);
+        data = new ArrayList<>(cap);
         size = 0;
     }
 
@@ -28,6 +28,10 @@ public abstract class Heap<T> implements Iterable {
 
     public int getSize() {
         return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 
     public boolean isEmpty() {
@@ -74,7 +78,7 @@ public abstract class Heap<T> implements Iterable {
         if (isEmpty()) {
             throw new Error("Empty");
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int i = 0;
         int level = 0;
         while (i < size) {
@@ -95,7 +99,7 @@ public abstract class Heap<T> implements Iterable {
 
     @Override
     public Iterator<T> iterator() {
-        return new Iterator<T>() {
+        return new Iterator<>() {
             private int current = 0;
 
             @Override

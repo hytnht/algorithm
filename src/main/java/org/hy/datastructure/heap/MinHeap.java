@@ -31,16 +31,16 @@ public class MinHeap<T extends Comparable<T>> extends Heap<T> {
     public void heapify(int key) {
         int left = left(key);
         int right = right(key);
-        int smallest = key;
+        int min = key;
         if (left < size && this.data.get(left).compareTo(this.data.get(key)) < 0) {
-            smallest = left;
+            min = left;
         }
-        if (right < size && this.data.get(right).compareTo(this.data.get(smallest)) < 0) {
-            smallest = right;
+        if (right < size && this.data.get(right).compareTo(this.data.get(min)) < 0) {
+            min = right;
         }
-        if (smallest != key) {
-            swap(smallest, key);
-            heapify(smallest);
+        if (min != key) {
+            swap(min, key);
+            heapify(min);
         }
     }
 

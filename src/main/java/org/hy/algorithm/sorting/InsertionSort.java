@@ -38,7 +38,7 @@ public class InsertionSort {
 
         Integer[] i3 = new Integer[]{0, 1, 7, 3, 9, 11, 10, 25};
         System.out.println("Integer nearly sorted " + Arrays.toString(i3));
-        sort(i3, true);
+        sort(i3, false);
         System.out.println("--> Insertion sort: " + print(i3) + "\n");
 
         Integer[] i4 = new Integer[]{6, 11, 0, 11, 10, 7, 1, 9, 11, 10, 9, 6, 9, 10};

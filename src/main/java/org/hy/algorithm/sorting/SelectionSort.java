@@ -43,7 +43,7 @@ public class SelectionSort {
 
         Integer[] i4 = new Integer[]{6, 11, 0, 11, 10, 7, 1, 9, 11, 10, 9, 6, 9, 10};
         System.out.println("Integer many duplicates " + Arrays.toString(i4));
-        sort(i4, true);
+        sort(i4, false);
         System.out.println("--> Selection sort: " + print(i4) + "\n");
 
         String[] s1 = new String[]{"Tokyo", "Paris", "Hanoi", "Washington", "London", "Moscow", "Berlin"};

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import static main.java.org.hy.algorithm.sorting.SortUtils.print;
 
 public class BucketSort {
+    @SuppressWarnings({"rawtype","unchecked"})
     public static void sort(Float[] array, boolean desc) {
         int len = array.length;
         ArrayList<Float>[] bucketList = new ArrayList[len];

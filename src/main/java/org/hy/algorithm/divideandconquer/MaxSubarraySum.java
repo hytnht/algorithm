@@ -13,13 +13,13 @@ public class MaxSubarraySum {
     }
 
     private static int maxCrossMidSum(int[] array, int left, int mid, int right) {
-        int lsum = 0;
+        int lsum = array[mid];
         int sum = 0;
         for (int i = mid; i >= left; i--) {
             sum += array[i];
             if (sum > lsum) lsum = sum;
         }
-        int rsum = 0;
+        int rsum = array[mid + 1];
         sum = 0;
         for (int i = mid + 1; i <= right; i++) {
             sum += array[i];
@@ -29,7 +29,7 @@ public class MaxSubarraySum {
     }
 
     public static void main(String[] args) {
-        System.out.println(maxSum(new int[]{-2, -5, 6, -2, -3, 1, 5, -6}, 0, 7));
+        System.out.println(maxSum(new int[]{-2, -1}, 0, 1));
         System.out.println(maxSum(new int[]{12, -2, -23, 18, -1, -14, -21, 16, 19, -5, 10, -3, -20, 13, -4, -7}, 0, 15));
     }
 }
